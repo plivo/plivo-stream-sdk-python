@@ -1,0 +1,18 @@
+[project]
+name = "full-example"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "deepgram-sdk>=5.3.0",
+    "plivo-stream-sdk-python",
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.20.0",
+    "plivo>=4.59.3",
+    "elevenlabs>=2.22.0",
+    "openai>=2.6.1",
+]
+
+[tool.uv.sources]
+plivo-stream-sdk-python = { workspace = true }

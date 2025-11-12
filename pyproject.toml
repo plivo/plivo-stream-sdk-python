@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plivo-stream-sdk-python"
+description = "Official Python SDK for the Plivo Streaming API with asyncio, WebSockets and FastAPI support"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.104.0",
+    "websockets>=12.0",
+    "pydantic>=2.0.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = 'https://github.com/plivo/plivo-stream-sdk-python'
+
+[project.optional-dependencies]
+dev = [
+    "uvicorn[standard]>=0.24.0",
+    "deepgram-sdk>=5.3.0",
+    "plivo>=4.59.3",
+    "elevenlabs>=2.22.0",
+    "openai>=2.6.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["plivo_stream*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "plivo_stream.__version__" }
+
+[tool.uv.workspace]
+members = [
+    "examples/fastapi_example",
+    "examples/demo",
+]
