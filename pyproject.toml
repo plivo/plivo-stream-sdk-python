@@ -3,8 +3,11 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "plivo-stream-sdk-python"
+name = "plivo-stream-sdk"
 description = "Official Python SDK for the Plivo Streaming API with asyncio, WebSockets and FastAPI support"
+authors = [
+  { name="Plivo", email="sdks@plivo.com" },
+]
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
@@ -13,9 +16,13 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 dynamic = ["version"]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 
 [project.urls]
 Repository = 'https://github.com/plivo/plivo-stream-sdk-python'
+Issues = "https://github.com/plivo/plivo-stream-sdk-python/issues"
+
 
 [project.optional-dependencies]
 dev = [

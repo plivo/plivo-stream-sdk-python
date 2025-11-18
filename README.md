@@ -10,7 +10,7 @@
 
 ## Installation
 ```bash
-pip install -e
+pip install plivo-stream-sdk
 ```
 
 For development (includes uvicorn for running examples):
