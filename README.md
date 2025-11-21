@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
 ## Architecture
 
-![Plivo Streaming Architecture](doc/img/streaming_architecture.png)
+![Plivo Streaming Architecture](https://raw.githubusercontent.com/plivo/plivo-stream-sdk-python/refs/heads/main/doc/img/streaming_architecture.png)
 
 The SDK acts as a bridge between Plivo's server and your application, handling bidirectional audio streaming.
 
