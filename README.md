@@ -91,9 +91,9 @@ The SDK acts as a bridge between Plivo's server and your application, handling b
 
 ## Examples
 
-* [Minimal Websocket example](examples/websockets_example.py)
-* [Minimal FastAPI example](examples/fastapi_example.py)
-* [Demo using FastAPI, Deepgram STT, ElevenLabs TTS, OpenAI LLM](examples/demo/README.md)
+* [Minimal Websocket example](https://github.com/plivo/plivo-stream-sdk-python/blob/main/examples/websockets_example.py)
+* [Minimal FastAPI example](https://github.com/plivo/plivo-stream-sdk-python/blob/main/examples/fastapi_example.py)
+* [Demo using FastAPI, Deepgram STT, ElevenLabs TTS, OpenAI LLM](https://github.com/plivo/plivo-stream-sdk-python/blob/main/examples/demo/README.md)
 
 ## API Reference
 
