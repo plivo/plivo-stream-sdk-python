@@ -27,13 +27,11 @@ class MediaFormat(BaseModel):
     encoding: str = Field(
         ...,
         description="Audio encoding, e.g., 'audio/x-mulaw'",
-        docstring="The audio encoding type, such as 'audio/x-mulaw'.",
     )
     sample_rate: int = Field(
         ...,
         alias="sampleRate",
         description="Sample rate, e.g., 8000",
-        docstring="The audio sample rate in Hz. For example, 8000.",
     )
 
 
