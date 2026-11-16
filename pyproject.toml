@@ -42,6 +42,9 @@ dev = [
     "elevenlabs>=2.22.0",
     "openai>=2.6.1",
 ]
+test = [
+    "pytest>=7.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]

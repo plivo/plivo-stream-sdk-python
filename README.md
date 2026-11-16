@@ -238,11 +238,28 @@ await handler.send_text("Hello")
 
 #### Lifecycle Methods
 
-**`start()`**  
+**`start(with_signature_verification=False, auth_token=None, public_url=None, allow_legacy_signature=True)`**  
 Start the WebSocket listener loop. This should be awaited in your endpoint.
 
 ```python
 await handler.start()
+```
+
+Signature validation options:
+
+- `with_signature_verification` (default `False`): validate the `X-Plivo-Signature-V3` header before accepting the connection. Invalid connections are rejected with HTTP 403 and `on_error` receives a `ValueError`
+- `auth_token`: your Plivo auth token, required when `with_signature_verification` is `True`
+- `public_url` (optional): public base URL of your stream endpoint as set in your `<Stream>` XML, e.g. `wss://example.com`. The request path and query are appended to it. Set it when a proxy in front of the server changes the scheme, host or path prefix. Without it, the URL is rebuilt from the request's Host header, using `wss` if `x-forwarded-proto` is `https` or `wss` (or, without that header, if the request itself uses TLS)
+- `allow_legacy_signature` (default `True`): also accept the legacy signature format, computed over `http://host/path` with the query dropped. Transitional; it will be removed in a future release
+
+Plivo signs the stream URL as configured: `ws`/`wss`, host and port, URL-decoded path, and the decoded query sorted by key. Versions before 0.2.0 reject these signatures.
+
+```python
+await handler.start(
+    with_signature_verification=True,
+    auth_token=os.environ["PLIVO_AUTH_TOKEN"],
+    public_url="wss://example.com",  # only needed behind a proxy
+)
 ```
 
 **`stop()`**  
@@ -299,6 +316,27 @@ Stop the WebSocket listener and close the connection.
 
 ```python
 await handler.stop()
+```
+
+### validate_stream_signature
+
+`validate_stream_signature(url, headers, auth_token, allow_legacy_signature=True) -> bool`
+
+Validates a stream connection's signature outside the FastAPI handler. `url` is the full stream URL the connection was made to (as configured in your `<Stream>` XML, path and query may be percent-encoded); `headers` is any mapping of the request headers, which must include `X-Plivo-Signature-V3` and `X-Plivo-Signature-V3-Nonce`. The signature header may hold several comma-separated signatures; the connection is valid if any of them matches.
+
+For example, to reject unsigned connections during the handshake with the websockets library:
+
+```python
+from http import HTTPStatus
+from plivo_stream import validate_stream_signature
+
+def process_request(connection, request):
+    url = "wss://example.com" + request.path  # your public stream URL base
+    if not validate_stream_signature(url, request.headers, os.environ["PLIVO_AUTH_TOKEN"]):
+        return connection.respond(HTTPStatus.FORBIDDEN, "Invalid signature\n")
+
+async with websockets.serve(create_handler, "0.0.0.0", 8000, process_request=process_request):
+    await asyncio.Future()
 ```
 
 ## Event Types
