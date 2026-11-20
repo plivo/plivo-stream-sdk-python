@@ -1,9 +1,9 @@
 """FastAPI WebSocket streaming handler for Plivo"""
 
-from operator import contains
+from typing import Optional
 from fastapi import WebSocket, WebSocketDisconnect
 from plivo_stream.base import BaseStreamingHandler
-import plivo.utils as plivoutils
+from plivo_stream.signature import stream_url_from_scope, validate_stream_signature
 
 
 class PlivoFastAPIStreamingHandler(BaseStreamingHandler):
@@ -33,31 +33,43 @@ class PlivoFastAPIStreamingHandler(BaseStreamingHandler):
         await self.websocket.send_text(data)
 
     async def start(
-        self, with_signature_verification: bool = False, auth_token: str = None
+        self,
+        with_signature_verification: bool = False,
+        auth_token: Optional[str] = None,
+        public_url: Optional[str] = None,
+        allow_legacy_signature: bool = True,
     ):
         """
         Start the WebSocket listener loop.
         This should be awaited in your FastAPI WebSocket endpoint.
+
+        Args:
+            with_signature_verification: Validate the X-Plivo-Signature-V3 header
+                before accepting the connection.
+            auth_token: Your Plivo auth token. Required with signature verification.
+            public_url: Public base URL of the stream endpoint as configured in your
+                <Stream> XML, e.g. "wss://example.com". The request path and query are
+                appended to it. Set this when a proxy in front of the server changes the
+                scheme, host or path prefix. If omitted, the URL is built from the Host
+                header, using wss if x-forwarded-proto is https/wss, else the request scheme.
+            allow_legacy_signature: Also accept the legacy signed form
+                (http://host/path, query dropped). Transitional; it will be removed
+                in a future release.
         """
 
         if with_signature_verification and not auth_token:
             raise ValueError("Auth token is required")
         try:
-            headers = dict(self.websocket.headers)
             if with_signature_verification:
-                parsed_uri = self.websocket.url._url
-                if "ws://" in self.websocket.url._url:
-                    parsed_uri = self.websocket.url._url.replace("ws://", "http://")
-                elif "wss://" in self.websocket.url._url:
-                    parsed_uri = self.websocket.url._url.replace("wss://", "http://")
-                valid_v3_signature = plivoutils.validate_v3_signature(
-                    uri=parsed_uri + "/websocket",
-                    method="GET",
-                    nonce=headers.get("x-plivo-signature-v3-nonce"),
-                    v3_signature=headers.get("x-plivo-signature-v3"),
-                    auth_token=auth_token,
-                )
-                if not valid_v3_signature:
+                url = stream_url_from_scope(self.websocket.scope, public_url)
+                if not validate_stream_signature(
+                    url,
+                    self.websocket.headers,
+                    auth_token,
+                    allow_legacy_signature=allow_legacy_signature,
+                ):
+                    # Closing before accept rejects the handshake with HTTP 403.
+                    await self.websocket.close(code=1008)
                     raise ValueError("Invalid socket signature")
 
             self._running = True

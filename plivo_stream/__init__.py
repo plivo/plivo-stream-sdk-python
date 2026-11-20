@@ -1,10 +1,11 @@
 """Official Python SDK for the Plivo Streaming API with asyncio, WebSockets and FastAPI support"""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from plivo_stream.base import BaseStreamingHandler
 from plivo_stream.fastapi import PlivoFastAPIStreamingHandler
 from plivo_stream.websockets import PlivoWebsocketStreamingHandler
+from plivo_stream.signature import validate_stream_signature
 from plivo_stream.types import (
     EventType,
     StreamEvent,
@@ -39,6 +40,8 @@ __all__ = [
     "BaseStreamingHandler",
     "PlivoFastAPIStreamingHandler",
     "PlivoWebsocketStreamingHandler",
+    # Signature validation
+    "validate_stream_signature",
     # Enums
     "EventType",
     # Base types
